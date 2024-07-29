@@ -1,0 +1,83 @@
+<div class="centered">
+  <div class="table-container">
+    <div class="form-group button-container search-container">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Buscar producto"
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="onSearchChange($event)"
+        style="width: 200px"
+      />
+
+      <button class="btn btn-primary" (click)="goToAddProduct()">
+        Añadir Producto
+      </button>
+    </div>
+
+    <table *ngIf="!loading" class="product-table">
+      <thead>
+        <tr>
+          <th>Logo</th>
+          <th>Nombre</th>
+          <th>Descripción</th>
+          <th>Fecha de liberación</th>
+          <th>Fecha de revisión</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let product of displayedProducts">
+          <td>
+            <img
+              src="assets/demo.svg"
+              [alt]="product.name"
+              class="product-logo circle-image"
+            />
+          </td>
+          <td>{{ product.name }}</td>
+          <td>{{ product.description }}</td>
+          <td>{{ product.date_release | date : "dd/MM/yyyy" }}</td>
+          <td>{{ product.date_revision | date : "dd/MM/yyyy" }}</td>
+          <td>
+            <select
+              class="form-select"
+              [(ngModel)]="optionSelected"
+              (change)="productAction(product)"
+            >
+              <option value="" disabled>Acciones</option>
+              <option *ngFor="let option of productOptions" [value]="option.id">
+                {{ option.label }}
+              </option>
+            </select>
+          </td>
+        </tr>
+        <tr *ngIf="displayedProducts.length === 0">
+          <td colspan="5" class="text-start">No hay datos para mostrar</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="!loading" class="form-group pagination-controls">
+      <select
+        class="form-select"
+        id="pageSize"
+        [(ngModel)]="pageSize"
+        (change)="updateDisplayedProducts()"
+      >
+        <option *ngFor="let size of pageSizes" [value]="size">
+          {{ size }}
+        </option>
+      </select>
+    </div>
+    <app-skeleton *ngIf="loading" ></app-skeleton>
+  </div>
+</div>
+
+<app-modal
+  *ngIf="showModalRemove"
+  (closed)="closeModalRemove($event)"
+  [title]="
+    '¿Está seguro de eliminar el producto ' + this.productToRemove?.name + '?'
+  "
+></app-modal>
